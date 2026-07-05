@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpendWise — Dashboard</title>
+  <meta name="description" content="SpendWise: Smart budgeting, better future. Track income, expenses, budgets and savings goals easily." />
+
+  <!-- Google Fonts: Plus Jakarta Sans for headings/numbers (friendly, geometric, confident),
+       Inter for body copy (extremely legible, great for accessibility & older / low-literacy users) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       SKIP LINK (accessibility: lets keyboard users jump to content)
+  ============================================================= -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <div class="app-shell">
+
+    <!-- ============================================================
+         SIDEBAR NAVIGATION (visible on tablet & desktop)
+         Same nav appears on every page of the app for consistency.
+    ============================================================= -->
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+
+      <div class="sidebar__brand">
+        <span class="brand-mark" aria-hidden="true">
+          <!-- simple leaf mark, echoes the SpendWise logo -->
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 21C7 21 3 17 3 11.5C3 7 6 3 12 3C16 3 20 6 20 11C20 12 19.8 13 19.5 13.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M12 21C12 21 12 14 18 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand-text">
+          SpendWise
+          <small>Smart Budgeting, Better Future</small>
+        </span>
+      </div>
+
+      <nav class="sidebar__nav">
+        <a href="#" class="nav-link is-active" aria-current="page">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 11.5L12 4l8 7.5M6 10v9a1 1 0 001 1h4v-6h2v6h4a1 1 0 001-1v-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Home</span>
+        </a>
+        <a href="#" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="14" rx="2.2" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 9.5h17" stroke="currentColor" stroke-width="1.8"/></svg>
+          <span>Budget</span>
+        </a>
+        <a href="#" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.3" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+          <span>Savings Goals</span>
+        </a>
+        <a href="#" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 19V10M10 19V5M16 19v-7M4 19h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Reports</span>
+        </a>
+        <a href="#" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l5 5v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 11h8M8 15h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span>Transactions</span>
+        </a>
+        <a href="#" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M6 8a6 6 0 1112 0c0 4 1.6 5.5 2 6.5H4c.4-1 2-2.5 2-6.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 18a2.5 2.5 0 005 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span>Reminders</span>
+        </a>
+      </nav>
+
+      <div class="sidebar__footer">
+        <a href="#" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.2" r="3.4" stroke="currentColor" stroke-width="1.8"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span>Profile</span>
+        </a>
+        <a href="#" class="nav-link nav-link--danger">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M15 17l5-5-5-5M20 12H8M12 4H6a2 2 0 00-2 2v12a2 2 0 002 2h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Log Out</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- ============================================================
+         MAIN COLUMN: topbar + page content
+    ============================================================= -->
+    <div class="main-column">
+
+      <!-- ---------------- TOP BAR ---------------- -->
+      <header class="topbar">
+        <button class="icon-btn topbar__menu-btn" id="menuToggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+        </button>
+
+        <div class="topbar__greeting">
+          <p class="greeting-eyebrow" id="greetingText">Good Evening,</p>
+          <h1 class="greeting-name">Mariam <span aria-hidden="true">👋</span></h1>
+        </div>
+
+        <div class="topbar__actions">
+          <div class="currency-pill" title="Your main currency">
+            <span>NGN (₦)</span>
+          </div>
+
+          <div class="notif-wrap">
+            <button class="icon-btn" id="notifBtn" aria-label="View notifications, 1 unread" aria-haspopup="true" aria-expanded="false">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 3a5 5 0 00-5 5v3.2c0 .8-.3 1.6-.9 2.2L5 14.7c-.6.6-.2 1.7.7 1.7h12.6c.9 0 1.3-1.1.7-1.7l-1.1-1.3a3.2 3.2 0 01-.9-2.2V8a5 5 0 00-5-5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9.5 19a2.5 2.5 0 005 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              <span class="notif-dot" aria-hidden="true">1</span>
+            </button>
+            <div class="notif-panel" id="notifPanel" role="menu" hidden>
+              <p class="notif-panel__title">Notifications</p>
+              <div class="notif-item">
+                <span class="notif-item__icon notif-item__icon--warn">!</span>
+                <div>
+                  <p><strong>Food budget</strong> is at 78% for this month.</p>
+                  <span class="notif-item__time">2 hours ago</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="avatar-btn" aria-label="Open profile menu">MA</button>
+        </div>
+      </header>
+
+      <!-- ---------------- PAGE CONTENT ---------------- -->
+      <main id="main-content" class="page">
+
+        <!-- BALANCE CARD -->
+        <section class="balance-card" aria-label="Current balance">
+          <div class="balance-card__top">
+            <span>Current Balance</span>
+            <button class="eye-btn" id="balanceToggle" aria-label="Hide balance amount" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.7"/></svg>
+            </button>
+          </div>
+          <p class="balance-card__amount" id="balanceAmount" data-value="42500">₦42,500.00</p>
+
+          <div class="balance-card__stats">
+            <div>
+              <span class="stat-label">Income</span>
+              <span class="stat-value" id="incomeValue" data-value="120000">₦120,000</span>
+            </div>
+            <div class="balance-card__divider" aria-hidden="true"></div>
+            <div>
+              <span class="stat-label">Expenses</span>
+              <span class="stat-value" id="expenseValue" data-value="77500">₦77,500</span>
+            </div>
+            <div class="balance-card__divider" aria-hidden="true"></div>
+            <div>
+              <span class="stat-label">Savings</span>
+              <span class="stat-value" id="savingsValue" data-value="42500">₦42,500</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- QUICK ACTIONS -->
+        <section aria-label="Quick actions" class="quick-actions">
+          <button class="quick-action quick-action--income" data-open-modal="incomeModal">
+            <span class="quick-action__icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+            Add Income
+          </button>
+          <button class="quick-action quick-action--expense" data-open-modal="expenseModal">
+            <span class="quick-action__icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+            Add Expense
+          </button>
+          <button class="quick-action quick-action--budget" data-open-modal="budgetModal">
+            <span class="quick-action__icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V10M10 19V5M16 19v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+            Set Budget
+          </button>
+          <button class="quick-action quick-action--goal" data-open-modal="goalModal">
+            <span class="quick-action__icon">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.3" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>
+            </span>
+            Add Goal
+          </button>
+        </section>
+
+        <!-- OVERVIEW + TRANSACTIONS -->
+        <section class="content-grid">
+
+          <!-- Spending overview donut -->
+          <div class="card overview-card">
+            <div class="card__header">
+              <h2>This Month's Spending</h2>
+              <span class="card__badge">June 2026</span>
+            </div>
+
+            <div class="overview-body">
+              <div class="donut-wrap">
+                <svg viewBox="0 0 160 160" class="donut" id="donutChart" role="img" aria-label="Spending breakdown: Food 40%, Transport 20%, Shopping 15%, Bills 15%, Others 10%">
+                  <circle cx="80" cy="80" r="62" class="donut__track" />
+                  <!-- segments drawn/animated by script.js -->
+                  <g id="donutSegments"></g>
+                </svg>
+                <div class="donut-center">
+                  <span class="donut-center__amount">₦77,500</span>
+                  <span class="donut-center__label">Total Spent</span>
+                </div>
+              </div>
+
+              <ul class="legend" id="legendList">
+                <li><span class="legend__dot" style="background:#22C55E"></span>Food <b>40%</b></li>
+                <li><span class="legend__dot" style="background:#F59E0B"></span>Transport <b>20%</b></li>
+                <li><span class="legend__dot" style="background:#3882F6"></span>Shopping <b>15%</b></li>
+                <li><span class="legend__dot" style="background:#16A34A"></span>Bills <b>15%</b></li>
+                <li><span class="legend__dot" style="background:#64748B"></span>Others <b>10%</b></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Recent transactions -->
+          <div class="card transactions-card">
+            <div class="card__header">
+              <h2>Recent Transactions</h2>
+              <a href="#" class="card__link">See all</a>
+            </div>
+
+            <div class="tabs" role="tablist" aria-label="Filter transactions">
+              <button class="tab is-active" role="tab" aria-selected="true" data-filter="all">All</button>
+              <button class="tab" role="tab" aria-selected="false" data-filter="income">Income</button>
+              <button class="tab" role="tab" aria-selected="false" data-filter="expense">Expense</button>
+            </div>
+
+            <ul class="tx-list" id="txList">
+              <!-- transaction items are rendered by script.js from sample data,
+                   and new ones are added to the top when a form is saved -->
+            </ul>
+          </div>
+        </section>
+
+        <!-- BUDGET SNAPSHOT + TIP OF THE DAY -->
+        <section class="content-grid content-grid--secondary">
+
+          <div class="card budget-card">
+            <div class="card__header">
+              <h2>Budget Snapshot</h2>
+              <a href="#" class="card__link">Manage budgets</a>
+            </div>
+
+            <div class="budget-row">
+              <div class="budget-row__top">
+                <span class="budget-row__name">🍔 Food</span>
+                <span class="budget-row__amount">₦15,600 / ₦20,000</span>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="--fill:78%; background:#22C55E;"></div></div>
+              <span class="budget-row__pct">78% used</span>
+            </div>
+
+            <div class="budget-row">
+              <div class="budget-row__top">
+                <span class="budget-row__name">🚌 Transport</span>
+                <span class="budget-row__amount">₦9,800 / ₦15,000</span>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="--fill:65%; background:#3882F6;"></div></div>
+              <span class="budget-row__pct">65% used</span>
+            </div>
+
+            <div class="budget-row">
+              <div class="budget-row__top">
+                <span class="budget-row__name">🧾 Bills</span>
+                <span class="budget-row__amount">₦3,200 / ₦10,000</span>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="--fill:32%; background:#F59E0B;"></div></div>
+              <span class="budget-row__pct">32% used</span>
+            </div>
+          </div>
+
+          <div class="card tip-card">
+            <div class="card__header">
+              <h2>Financial Tip of the Day</h2>
+            </div>
+            <div class="tip-body">
+              <span class="tip-icon" aria-hidden="true">💡</span>
+              <p>Save first, spend later. Try to save at least 20% of your income before you pay for anything else.</p>
+            </div>
+            <button class="btn btn--ghost btn--full" id="nextTipBtn" type="button">Show another tip</button>
+          </div>
+        </section>
+
+      </main>
+
+      <footer class="page-footer">
+        <p>© 2026 SpendWise. Your money, made simple.</p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MOBILE BOTTOM NAVIGATION (visible on small screens only)
+  ============================================================= -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <a href="#" class="bottom-nav__item is-active">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 11.5L12 4l8 7.5M6 10v9a1 1 0 001 1h4v-6h2v6h4a1 1 0 001-1v-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="#" class="bottom-nav__item">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="14" rx="2.2" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 9.5h17" stroke="currentColor" stroke-width="1.8"/></svg>
+      <span>Budget</span>
+    </a>
+    <a href="#" class="bottom-nav__item">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V10M10 19V5M16 19v-7M4 19h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Reports</span>
+    </a>
+    <a href="#" class="bottom-nav__item">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="19" cy="12" r="1.4" fill="currentColor"/></svg>
+      <span>More</span>
+    </a>
+  </nav>
+
+  <!-- ============================================================
+       BACKDROP for mobile sidebar + modals
+  ============================================================= -->
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <!-- ============================================================
+       MODAL: ADD INCOME
+  ============================================================= -->
+  <div class="modal" id="incomeModal" role="dialog" aria-modal="true" aria-labelledby="incomeModalTitle" hidden>
+    <div class="modal__panel">
+      <div class="modal__header">
+        <h2 id="incomeModalTitle">Add Income</h2>
+        <button class="icon-btn" data-close-modal aria-label="Close dialog">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <form class="modal__form" id="incomeForm" novalidate>
+        <div class="field-group">
+          <label for="incomeAmount">Amount</label>
+          <div class="amount-row">
+            <select id="incomeCurrency" aria-label="Currency for this income">
+              <option value="NGN">NGN (₦)</option>
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="GHS">GHS (₵)</option>
+              <option value="KES">KES (KSh)</option>
+            </select>
+            <input type="number" id="incomeAmount" min="0" step="0.01" placeholder="e.g. 50000" required />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="incomeSource">Source</label>
+          <select id="incomeSource" required>
+            <option value="">Select where this money came from</option>
+            <option>Salary</option>
+            <option>Business</option>
+            <option>Gift</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="incomeDate">Date received</label>
+          <input type="date" id="incomeDate" required />
+        </div>
+
+        <div class="field-group">
+          <label for="incomeNotes">Notes (optional)</label>
+          <input type="text" id="incomeNotes" placeholder="e.g. May salary" />
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">Save Income</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: ADD EXPENSE
+  ============================================================= -->
+  <div class="modal" id="expenseModal" role="dialog" aria-modal="true" aria-labelledby="expenseModalTitle" hidden>
+    <div class="modal__panel">
+      <div class="modal__header">
+        <h2 id="expenseModalTitle">Add Expense</h2>
+        <button class="icon-btn" data-close-modal aria-label="Close dialog">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <form class="modal__form" id="expenseForm" novalidate>
+        <div class="field-group">
+          <label for="expenseAmount">Amount</label>
+          <div class="amount-row">
+            <select id="expenseCurrency" aria-label="Currency for this expense">
+              <option value="NGN">NGN (₦)</option>
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="GHS">GHS (₵)</option>
+              <option value="KES">KES (KSh)</option>
+            </select>
+            <input type="number" id="expenseAmount" min="0" step="0.01" placeholder="e.g. 2500" required />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="expenseCategory">Category</label>
+          <select id="expenseCategory" required>
+            <option value="">Select what this was for</option>
+            <option>Food</option>
+            <option>Transport</option>
+            <option>Shopping</option>
+            <option>Bills</option>
+            <option>Others</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="expenseDate">Date</label>
+          <input type="date" id="expenseDate" required />
+        </div>
+
+        <div class="field-group">
+          <label for="expenseNotes">Notes (optional)</label>
+          <input type="text" id="expenseNotes" placeholder="e.g. Bus to school" />
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">Save Expense</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: SET BUDGET
+  ============================================================= -->
+  <div class="modal" id="budgetModal" role="dialog" aria-modal="true" aria-labelledby="budgetModalTitle" hidden>
+    <div class="modal__panel">
+      <div class="modal__header">
+        <h2 id="budgetModalTitle">Set Budget</h2>
+        <button class="icon-btn" data-close-modal aria-label="Close dialog">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <form class="modal__form" id="budgetForm" novalidate>
+        <div class="field-group">
+          <label for="budgetCategory">Category</label>
+          <select id="budgetCategory" required>
+            <option value="">Select a category to budget for</option>
+            <option>Food</option>
+            <option>Transport</option>
+            <option>Shopping</option>
+            <option>Bills</option>
+            <option>Others</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="budgetAmount">Monthly limit</label>
+          <div class="amount-row">
+            <select id="budgetCurrency" aria-label="Currency for this budget">
+              <option value="NGN">NGN (₦)</option>
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="GHS">GHS (₵)</option>
+              <option value="KES">KES (KSh)</option>
+            </select>
+            <input type="number" id="budgetAmount" min="0" step="0.01" placeholder="e.g. 20000" required />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">Save Budget</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: ADD SAVINGS GOAL
+  ============================================================= -->
+  <div class="modal" id="goalModal" role="dialog" aria-modal="true" aria-labelledby="goalModalTitle" hidden>
+    <div class="modal__panel">
+      <div class="modal__header">
+        <h2 id="goalModalTitle">Add Savings Goal</h2>
+        <button class="icon-btn" data-close-modal aria-label="Close dialog">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <form class="modal__form" id="goalForm" novalidate>
+        <div class="field-group">
+          <label for="goalName">Goal name</label>
+          <input type="text" id="goalName" placeholder="e.g. New Laptop" required />
+        </div>
+
+        <div class="field-group">
+          <label for="goalAmount">Target amount</label>
+          <div class="amount-row">
+            <select id="goalCurrency" aria-label="Currency for this goal">
+              <option value="NGN">NGN (₦)</option>
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="GHS">GHS (₵)</option>
+              <option value="KES">KES (KSh)</option>
+            </select>
+            <input type="number" id="goalAmount" min="0" step="0.01" placeholder="e.g. 100000" required />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="goalDate">Target date</label>
+          <input type="date" id="goalDate" required />
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">Save Goal</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOAST (confirmation message shown after saving a form)
+  ============================================================= -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
