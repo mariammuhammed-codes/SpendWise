@@ -1,3 +1,4 @@
+
 /* =================================================================
    SPENDWISE — DASHBOARD SCRIPT
    Plain vanilla JavaScript, no frameworks or libraries.
