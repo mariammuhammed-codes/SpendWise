@@ -73,10 +73,10 @@
         </div>
         <div class="topbar__actions">
           <div class="currency-pill" title="Your main currency"><span>NGN (₦)</span></div>
-          <button class="icon-btn" aria-label="View notifications">
+          <a href="reminder.html" class="icon-btn" aria-label="Open reminders">
             <svg viewBox="0 0 24 24" fill="none"><path d="M12 3a5 5 0 00-5 5v3.2c0 .8-.3 1.6-.9 2.2L5 14.7c-.6.6-.2 1.7.7 1.7h12.6c.9 0 1.3-1.1.7-1.7l-1.1-1.3a3.2 3.2 0 01-.9-2.2V8a5 5 0 00-5-5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9.5 19a2.5 2.5 0 005 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-          </button>
-          <button class="avatar-btn" aria-label="Open profile menu">MA</button>
+          </a>
+          <a href="profile.html" class="avatar-btn" aria-label="Open profile page">MA</a>
         </div>
       </header>
       <main id="main-content" class="page">
@@ -86,37 +86,44 @@
             <h2>Your account details</h2>
             <p>Update your personal information, preferred currency, and app settings.</p>
           </div>
-          <button class="btn btn--primary">Edit profile</button>
+          <button id="editProfileBtn" class="btn btn--primary">Edit profile</button>
         </section>
         <section class="content-grid">
           <div class="card">
             <div class="card__header">
               <h2>Personal information</h2>
             </div>
-            <div class="budget-row">
-              <div class="budget-row__top">
-                <span class="budget-row__name">Name</span>
-                <span class="budget-row__amount">Mariam Johnson</span>
-              </div>
+            <div id="profileSummary"></div>
+          </div>
+          <div class="card" id="editProfileSection" hidden>
+            <div class="card__header">
+              <h2>Edit personal details</h2>
             </div>
-            <div class="budget-row">
-              <div class="budget-row__top">
-                <span class="budget-row__name">Email</span>
-                <span class="budget-row__amount">mariam@gmail.com</span>
+            <form class="modal__form" id="profileEditForm" novalidate>
+              <div class="field-group">
+                <label for="profileName">Full name</label>
+                <input type="text" id="profileName" placeholder="Your full name" required />
               </div>
-            </div>
-            <div class="budget-row">
-              <div class="budget-row__top">
-                <span class="budget-row__name">Phone</span>
-                <span class="budget-row__amount">+234 801 234 5678</span>
+              <div class="field-group">
+                <label for="profileEmail">Email address</label>
+                <input type="email" id="profileEmail" placeholder="you@example.com" required />
               </div>
-            </div>
-            <div class="budget-row">
-              <div class="budget-row__top">
-                <span class="budget-row__name">Mode</span>
-                <span class="budget-row__amount">Personal</span>
+              <div class="field-group">
+                <label for="profilePhone">Phone number</label>
+                <input type="tel" id="profilePhone" placeholder="+234 801 234 5678" required />
               </div>
-            </div>
+              <div class="field-group">
+                <label for="businessMode">Switch mode</label>
+                <select id="businessMode">
+                  <option value="personal">Personal</option>
+                  <option value="business">Business</option>
+                </select>
+              </div>
+              <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:14px;">
+                <button id="updateProfileBtn" class="btn btn--primary" type="button">Update profile</button>
+                <button id="clearProfileBtn" class="btn" type="button" style="background:transparent;color:#16A34A;border:2px solid #16A34A;">Clear all</button>
+              </div>
+            </form>
           </div>
           <div class="card">
             <div class="card__header">
@@ -129,16 +136,26 @@
                 <option value="USD">USD ($)</option>
                 <option value="EUR">EUR (€)</option>
                 <option value="GBP">GBP (£)</option>
+                <option value="GHS">GHS (₵)</option>
+                <option value="KES">KES (KSh)</option>
               </select>
             </form>
-            <form class="field-group">
-              <label for="businessMode">Switch mode</label>
-              <select id="businessMode">
-                <option value="personal">Personal</option>
-                <option value="business">Business</option>
-              </select>
-            </form>
-            <button class="btn btn--primary">Save settings</button>
+            <button id="saveSettingsBtn" class="btn btn--primary">Save settings</button>
+          </div>
+          <div class="card" style="margin-top: 24px;">
+            <div class="card__header">
+              <h2>Change password</h2>
+            </div>
+            <div class="field-group">
+              <label for="oldPassword">Old password</label>
+              <input type="password" id="oldPassword" placeholder="Enter old password" />
+            </div>
+            <div class="field-group">
+              <label for="newPassword">New password</label>
+              <input type="password" id="newPassword" placeholder="Enter new password" />
+            </div>
+            <button id="setPasswordBtn" class="btn btn--primary" type="button">Set password</button>
+            <p id="passwordMessage" style="margin-top:12px;font-size:0.95rem;"></p>
           </div>
         </section>
         <section class="card" style="margin-top: 24px;">
@@ -148,18 +165,45 @@
           <div class="budget-row"> 
             <div class="budget-row__top">
               <span class="budget-row__name">Backup & restore</span>
-              <button class="btn">Manage</button>
+              <button id="manageBackupBtn" class="btn">Manage</button>
             </div>
           </div>
-          <div class="budget-row" style="margin-top: 12px;">
+          <div id="backupPanel" hidden style="margin-top:16px;padding:14px;border:1px solid var(--color-border);border-radius:12px;background:var(--color-white);">
+            <p style="margin-bottom: 12px; font-weight: 600;">Enter the email where you want your backup address saved.</p>
+            <div class="field-group">
+              <label for="backupEmail">Backup email</label>
+              <input type="email" id="backupEmail" placeholder="you@example.com" />
+            </div>
+            <button id="backupSaveBtn" class="btn btn--primary" type="button">Save backup email</button>
+          </div>
+          <div class="budget-row" style="margin-top: 18px;">
             <div class="budget-row__top">
               <span class="budget-row__name">Help & support</span>
-              <button class ="btn">Open</button>
+              <button id="helpOpenBtn" class="btn" type="button">Open</button>
+            </div>
+          </div>
+          <div id="helpPanel" hidden role="region" aria-label="Help and support information" style="margin-top:16px;padding:14px;border:1px solid var(--color-border);border-radius:12px;background:var(--color-white);">
+            <div style="margin-bottom:12px;">
+              <h3 style="margin:0 0 8px 0;">General help</h3>
+              <div class="budget-row" style="margin-bottom:12px;flex-direction:column;align-items:flex-start;">
+                <span class="budget-row__name">How do I update my profile?</span>
+                <p class="reminder-desc">Click Edit profile, change your details, then click Update profile.</p>
+              </div>
+              <div class="budget-row" style="margin-bottom:12px;flex-direction:column;align-items:flex-start;">
+                <span class="budget-row__name">How can I change currency?</span>
+                <p class="reminder-desc">Select your preferred currency and press Save settings.</p>
+              </div>
+            </div>
+            <div>
+              <h3 style="margin:0 0 8px 0;">Customer support</h3>
+              <p class="reminder-desc">Email <a href="mailto:support@spendwise.com">support@spendwise.com</a> or call <a href="tel:+2348001234567">+234 800 123 4567</a> for assistance.</p>
             </div>
           </div>
         </section>
       </main>
     </div>
   </div>
+  <script src="../js/common.js"></script>
+  <script src="../js/profile.js"></script>
 </body>
 </html>
