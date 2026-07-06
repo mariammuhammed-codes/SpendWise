@@ -113,7 +113,33 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  const balanceAmountEl = document.getElementById('balanceAmount');
+  const incomeValueEl = document.getElementById('incomeValue');
+  const expenseValueEl = document.getElementById('expenseValue');
+  const savingsValueEl = document.getElementById('savingsValue');
+
+  function updateBalanceCard() {
+    const totalIncome = transactions.reduce(function (sum, tx) {
+      return tx.type === 'income' ? sum + tx.amount : sum;
+    }, 0);
+    const totalExpense = transactions.reduce(function (sum, tx) {
+      return tx.type === 'expense' ? sum + tx.amount : sum;
+    }, 0);
+    const netBalance = totalIncome - totalExpense;
+
+    balanceAmountEl.dataset.value = netBalance;
+    incomeValueEl.dataset.value = totalIncome;
+    expenseValueEl.dataset.value = totalExpense;
+    savingsValueEl.dataset.value = netBalance;
+
+    balanceAmountEl.textContent = formatMoney(netBalance, 'NGN');
+    incomeValueEl.textContent = formatMoney(totalIncome, 'NGN');
+    expenseValueEl.textContent = formatMoney(totalExpense, 'NGN');
+    savingsValueEl.textContent = formatMoney(netBalance, 'NGN');
+  }
+
   renderTransactions();
+  updateBalanceCard();
 
   // Filter tabs (All / Income / Expense)
   const tabs = document.querySelectorAll('.tab');
@@ -318,6 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     renderTransactions();
+    updateBalanceCard();
     e.target.reset();
     closeAllModals();
     showToast('Income of ' + formatMoney(amount, currency) + ' saved.');
@@ -342,6 +369,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     renderTransactions();
+    updateBalanceCard();
     e.target.reset();
     closeAllModals();
     showToast('Expense of ' + formatMoney(amount, currency) + ' saved.');

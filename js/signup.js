@@ -155,7 +155,14 @@ document.addEventListener('DOMContentLoaded', function () {
     loginSubmit.disabled = true;
     loginArrow.hidden = true;
     loginSpinner.hidden = false;
-    loginBtnText.textContent = 'Logging in...';
+    loginBtnText.textContent = 'Signing in...';
+
+    // ------------------------------------------------------------
+    // Simulate a login request then redirect to dashboard.html once
+    // the spinner has been displayed.
+    setTimeout(function () {
+      window.location.href = 'dashboard.html';
+    }, 1200);
 
     // ------------------------------------------------------------
     // DEVELOPER NOTE: this setTimeout stands in for a real network
