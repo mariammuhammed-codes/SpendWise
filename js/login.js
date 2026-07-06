@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
       loginArrow.hidden = false;
       loginSpinner.hidden = true;
       loginBtnText.textContent = 'Login';
-      showToast('Login successful! (Demo only — no account server is connected yet.)');
+      window.location.href = 'dashboard.html';
     }, 1300);
   });
 
