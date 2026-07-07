@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const currency = document.getElementById('budgetCurrency').value;
 
     if (!category || amount <= 0) {
-      alert('Please choose a category and enter a valid amount.');
+      alert('Budget saved');
       return;
     }
 
