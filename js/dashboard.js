@@ -399,11 +399,28 @@ document.addEventListener('DOMContentLoaded', function () {
   // -- Add Savings Goal --
   document.getElementById('goalForm').addEventListener('submit', function (e) {
     e.preventDefault();
-    const name = document.getElementById('goalName').value;
-    const amount = document.getElementById('goalAmount').value;
+    const name = document.getElementById('goalName').value.trim();
+    const amount = Number(document.getElementById('goalAmount').value);
     const currency = document.getElementById('goalCurrency').value;
+    const date = document.getElementById('goalDate').value;
 
-    if (!name || !amount) return;
+    if (!name || amount <= 0) {
+      alert('Please provide a goal name and a valid target amount.');
+      return;
+    }
+
+    const savings = SpendWise.getSavings() || [];
+    savings.push({
+      id: 'savings-' + Date.now(),
+      name: name,
+      target: amount,
+      current: 0,
+      currency: currency,
+      date: date,
+      status: 'active',
+      createdAt: new Date().toISOString()
+    });
+    SpendWise.saveSavings(savings);
 
     e.target.reset();
     closeAllModals();
