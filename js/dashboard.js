@@ -61,27 +61,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Icon + colour shown for each transaction category.
-  const CATEGORY_STYLE = {
-    Salary:    { icon: '💰', bg: 'rgba(34,197,94,0.14)' },
-    Business:  { icon: '💼', bg: 'rgba(34,197,94,0.14)' },
-    Gift:      { icon: '🎁', bg: 'rgba(34,197,94,0.14)' },
-    Food:      { icon: '🍔', bg: 'rgba(239,68,68,0.10)' },
-    Transport: { icon: '🚌', bg: 'rgba(56,130,246,0.12)' },
-    Shopping:  { icon: '🛍️', bg: 'rgba(245,158,11,0.14)' },
-    Bills:     { icon: '🧾', bg: 'rgba(100,116,139,0.14)' },
-    Others:    { icon: '📦', bg: 'rgba(100,116,139,0.14)' },
-    Other:     { icon: '📦', bg: 'rgba(100,116,139,0.14)' }
-  };
-
-  // Starting transaction data are loaded from persistent SpendWise state.
-  // If no persisted transactions exist, start with an empty list.
-  let transactions = SpendWise.getTransactions() || [];
-
-  const txListEl = document.getElementById('txList');
-  let currentFilter = 'all';
-
-  // Builds one <li> element for a transaction.
   function buildTxItem(tx) {
     const style = CATEGORY_STYLE[tx.category] || CATEGORY_STYLE.Others;
     const li = document.createElement('li');
@@ -328,84 +307,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  /* ---------------------------------------------------------------
-     8. FORM SUBMISSIONS
-     Each form pushes a new transaction/entry into the page and
-     gives the user a friendly confirmation — no page reload needed.
-  --------------------------------------------------------------- */
-
-  // -- Add Income --
-  document.getElementById('incomeForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const amount = document.getElementById('incomeAmount').value;
-    const currency = document.getElementById('incomeCurrency').value;
-    const source = document.getElementById('incomeSource').value;
-
-    if (!amount || !source) return; // required fields already enforced by browser
-
-    const transaction = {
-      type: 'income',
-      category: source,
-      amount: Number(amount),
-      currency: currency,
-      date: 'Just now',
-      notes: document.getElementById('incomeNotes').value
-    };
-    transactions.unshift(transaction);
-    SpendWise.saveTransactions(transactions);
-
-    renderTransactions();
-    updateBalanceCard();
-    e.target.reset();
-    closeAllModals();
-    showToast('Income of ' + formatMoney(amount, currency) + ' saved.');
-  });
-
-  // -- Add Expense --
-  document.getElementById('expenseForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const amount = document.getElementById('expenseAmount').value;
-    const currency = document.getElementById('expenseCurrency').value;
-    const category = document.getElementById('expenseCategory').value;
-
-    if (!amount || !category) return;
-
-    const transaction = {
-      type: 'expense',
-      category: category,
-      amount: Number(amount),
-      currency: currency,
-      date: 'Just now',
-      notes: document.getElementById('expenseNotes').value
-    };
-    transactions.unshift(transaction);
-    SpendWise.saveTransactions(transactions);
-
-    renderTransactions();
-    updateBalanceCard();
-    e.target.reset();
-    closeAllModals();
-    showToast('Expense of ' + formatMoney(amount, currency) + ' saved.');
-  });
-
-  // -- Set Budget --
-  document.getElementById('budgetForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const category = document.getElementById('budgetCategory').value;
-    const amount = Number(document.getElementById('budgetAmount').value);
-    const currency = document.getElementById('budgetCurrency').value;
-
-    if (!category || amount <= 0) {
-      alert('Budget saved');
-      return;
-    }
-  });
-
   document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape') {
       closeAllModals();
-    }
-  });
     }
   });
 
