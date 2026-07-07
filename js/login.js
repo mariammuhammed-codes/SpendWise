@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
       loginArrow.hidden = false;
       loginSpinner.hidden = true;
       loginBtnText.textContent = 'Login';
-      window.location.href = 'dashboard.html';
+      window.location.href = 'pages/dashboard.html';
     }, 1300);
   });
 
