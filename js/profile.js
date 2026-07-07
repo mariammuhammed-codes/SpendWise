@@ -81,6 +81,9 @@ document.addEventListener('DOMContentLoaded', function () {
       profile.phone = updatedProfile.phone;
       profile.mode = updatedProfile.mode;
       renderProfileSummary();
+      if (window.applySpendWiseProfileName) {
+        window.applySpendWiseProfileName();
+      }
       alert('Profile updated successfully.');
     });
   }
@@ -96,6 +99,9 @@ document.addEventListener('DOMContentLoaded', function () {
       SpendWise.saveProfile(updatedProfile);
       profile.mode = updatedProfile.mode;
       renderProfileSummary();
+      if (window.applySpendWiseProfileName) {
+        window.applySpendWiseProfileName();
+      }
       alert('Settings saved and currency updated across the app.');
     });
   }

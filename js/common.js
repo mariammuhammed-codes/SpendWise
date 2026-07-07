@@ -122,6 +122,40 @@ const SpendWise = {
   }
 };
 
+function getSpendWiseDisplayName() {
+  const profile = SpendWise.getProfile();
+  return (profile && profile.name && profile.name.trim()) || 'Mariam Johnson';
+}
+
+function getSpendWiseInitials(name) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return 'MA';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function applySpendWiseProfileName() {
+  const displayName = getSpendWiseDisplayName();
+
+  document.querySelectorAll('.greeting-name').forEach(function (el) {
+    const icon = el.querySelector('span[aria-hidden="true"]');
+    const iconHtml = icon ? icon.outerHTML : '';
+    el.textContent = '';
+    el.appendChild(document.createTextNode(displayName));
+    if (iconHtml) {
+      el.insertAdjacentHTML('beforeend', iconHtml);
+    }
+  });
+
+  document.querySelectorAll('.avatar-btn').forEach(function (btn) {
+    btn.textContent = getSpendWiseInitials(displayName);
+  });
+
+  document.querySelectorAll('[data-profile-name]').forEach(function (el) {
+    el.textContent = displayName;
+  });
+}
+
 function applySpendWiseCurrency() {
   const currency = SpendWise.getCurrency();
   const label = SpendWise.getCurrencyLabel(currency);
@@ -189,6 +223,7 @@ function initSpendWiseQuickLinks() {
 }
 
 function initSpendWiseCommon() {
+  applySpendWiseProfileName();
   applySpendWiseCurrency();
   initSpendWiseMenuToggle();
   initSpendWiseQuickLinks();
@@ -196,3 +231,4 @@ function initSpendWiseCommon() {
 
 document.addEventListener('DOMContentLoaded', initSpendWiseCommon);
 window.SpendWise = SpendWise;
+window.applySpendWiseProfileName = applySpendWiseProfileName;
