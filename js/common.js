@@ -100,7 +100,25 @@ function notifySpendWiseDataChanged() {
 
 const SpendWise = {
   getState() {
-    return buildStateFromStorage(spendwiseLoadState());
+const stored = spendwiseLoadState();
+return buildStateFromStorage({
+  currency: 'NGN',
+  password: 'password123',
+  profile: {
+    name: 'Mariam Johnson',
+    email: 'mariam@gmail.com',
+    phone: '+234 801 234 5678',
+    mode: 'personal'
+  },
+  backups: {
+    email: ''
+  },
+  reminders: {},
+  budgets: [],
+  savings: [],
+  transactions: [],
+  ...stored
+});
   },
 
   saveState(changes) {
@@ -174,6 +192,14 @@ const SpendWise = {
 
   saveSavings(savings) {
     return this.saveState({ savings });
+  },
+
+  getTransactions() {
+    return this.getState().transactions || [];
+  },
+
+  saveTransactions(transactions) {
+    this.saveState({ transactions });
   },
 
   getProfile() {
