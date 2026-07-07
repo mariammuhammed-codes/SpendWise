@@ -125,28 +125,25 @@ document.addEventListener('DOMContentLoaded', function () {
     backdrop.hidden = true;
     menuToggle.setAttribute('aria-expanded', 'false');
   }
-  menuToggle.addEventListener('click', function () {
-    sidebar.classList.contains('is-open') ? closeSidebar() : openSidebar();
-  });
-  backdrop.addEventListener('click', closeSidebar);
+  if (menuToggle) {
+    menuToggle.addEventListener('click', function () {
+      sidebar.classList.contains('is-open') ? closeSidebar() : openSidebar();
+    });
+  }
+  if (backdrop) backdrop.addEventListener('click', closeSidebar);
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeSidebar();
   });
 
-  const notifBtn = document.getElementById('notifBtn');
+  // Notification button — navigate to reminders page. Use selector fallback so pages
+  // that don't include an element with id still work.
+  const notifBtn = document.getElementById('notifBtn') || document.querySelector('.icon-btn[aria-label^="View notifications"]');
   const notifPanel = document.getElementById('notifPanel');
-  notifBtn.addEventListener('click', function (e) {
-    e.stopPropagation();
-    const isOpen = !notifPanel.hidden;
-    notifPanel.hidden = isOpen;
-    notifBtn.setAttribute('aria-expanded', String(!isOpen));
-  });
-  document.addEventListener('click', function (e) {
-    if (!notifPanel.hidden && !notifPanel.contains(e.target) && e.target !== notifBtn) {
-      notifPanel.hidden = true;
-      notifBtn.setAttribute('aria-expanded', 'false');
-    }
-  });
+  if (notifBtn) {
+    notifBtn.addEventListener('click', function (e) {
+      window.location.href = 'reminder.html';
+    });
+  }
 
   /* ---------------------------------------------------------------
      6. FORM SUBMISSION

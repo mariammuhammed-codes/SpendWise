@@ -239,22 +239,15 @@ document.addEventListener('DOMContentLoaded', function () {
     sidebar.classList.contains('is-open') ? closeSidebar() : openSidebar();
   });
 
-  const notifBtn = document.getElementById('notifBtn');
+  // Notification button: navigate to reminders page instead of toggling panel.
+  const notifBtn = document.getElementById('notifBtn') || document.querySelector('.icon-btn[aria-label^="View notifications"]');
   const notifPanel = document.getElementById('notifPanel');
-  notifBtn.addEventListener('click', function (e) {
-    e.stopPropagation();
-    const isOpen = !notifPanel.hidden;
-    notifPanel.hidden = isOpen;
-    notifBtn.setAttribute('aria-expanded', String(!isOpen));
-  });
-
-  // Clicking anywhere else closes the notification panel.
-  document.addEventListener('click', function (e) {
-    if (!notifPanel.hidden && !notifPanel.contains(e.target) && e.target !== notifBtn) {
-      notifPanel.hidden = true;
-      notifBtn.setAttribute('aria-expanded', 'false');
-    }
-  });
+  if (notifBtn) {
+    notifBtn.addEventListener('click', function (e) {
+      // if there's a panel and the user is on a page that expects a panel, still navigate
+      window.location.href = 'reminder.html';
+    });
+  }
 
   /* ---------------------------------------------------------------
      6. MODAL OPEN / CLOSE LOGIC
@@ -379,10 +372,24 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('budgetForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const category = document.getElementById('budgetCategory').value;
-    const amount = document.getElementById('budgetAmount').value;
+    const amount = Number(document.getElementById('budgetAmount').value);
     const currency = document.getElementById('budgetCurrency').value;
 
-    if (!category || !amount) return;
+    if (!category || amount <= 0) {
+      alert('Please choose a category and enter a valid amount.');
+      return;
+    }
+
+    const budgets = SpendWise.getBudgets() || [];
+    budgets.push({
+      id: 'budget-' + Date.now(),
+      category: category,
+      amount: amount,
+      spent: 0,
+      notes: '',
+      currency: currency
+    });
+    SpendWise.saveBudgets(budgets);
 
     e.target.reset();
     closeAllModals();
