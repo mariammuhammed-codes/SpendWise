@@ -9,54 +9,51 @@ document.addEventListener('DOMContentLoaded', function () {
   const highestSpendEl = document.getElementById('reportHighestSpend');
   const donutSegments = Array.from(document.querySelectorAll('.donut-seg'));
 
-  function formatMoney(amount) {
-    const symbol = SpendWise.getCurrencySymbol(SpendWise.getCurrency());
-    return symbol + Number(amount).toLocaleString();
+  function formatMoney(amount, currencyCode) {
+    const symbol = SpendWise.getCurrencySymbol(currencyCode || SpendWise.getCurrency());
+    return symbol + Number(amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   function renderReport() {
-    const budgets = SpendWise.getBudgets() || [];
-    const currency = SpendWise.getCurrency();
-    const symbol = SpendWise.getCurrencySymbol(currency);
+    const state = SpendWise.getState();
+    const budgets = state.budgets || [];
+    const expenses = state.expenses || [];
+    const currency = state.currency || SpendWise.getCurrency();
+
     const totalBudget = budgets.reduce(function (sum, item) {
       return sum + Number(item.amount || 0);
     }, 0);
-    const totalSpent = budgets.reduce(function (sum, item) {
-      return sum + Number(item.spent || 0);
+    const totalSpent = expenses.reduce(function (sum, item) {
+      return sum + Number(item.amount || 0);
     }, 0);
     const totalRemaining = Math.max(0, totalBudget - totalSpent);
     const highestBudget = budgets.slice().sort(function (a, b) {
       return Number(b.amount || 0) - Number(a.amount || 0);
     })[0] || null;
 
-    const categoryAmounts = budgets.reduce(function (acc, item) {
-      const category = item.category || 'Other';
-      acc[category] = (acc[category] || 0) + Number(item.amount || 0);
-      return acc;
-    }, {});
-
-    const categoryEntries = Object.entries(categoryAmounts).sort(function (a, b) {
+    const spending = calculateMonthlySpending(expenses);
+    const categoryEntries = Object.entries(spending.byCategory || {}).sort(function (a, b) {
       return b[1] - a[1];
-    }).slice(0, 4);
+    });
     const totalCategoryAmount = categoryEntries.reduce(function (sum, item) {
-      return sum + item[1];
+      return sum + Number(item[1] || 0);
     }, 0);
 
-    if (reportAmount) reportAmount.textContent = formatMoney(totalBudget);
-    if (reportLabel) reportLabel.textContent = 'Budgeted';
-    if (totalBudgetEl) totalBudgetEl.textContent = formatMoney(totalBudget);
-    if (totalSpentEl) totalSpentEl.textContent = formatMoney(totalSpent);
-    if (totalRemainingEl) totalRemainingEl.textContent = formatMoney(totalRemaining);
+    if (reportAmount) reportAmount.textContent = formatMoney(totalSpent, currency);
+    if (reportLabel) reportLabel.textContent = 'Spent';
+    if (totalBudgetEl) totalBudgetEl.textContent = formatMoney(totalBudget, currency);
+    if (totalSpentEl) totalSpentEl.textContent = formatMoney(totalSpent, currency);
+    if (totalRemainingEl) totalRemainingEl.textContent = formatMoney(totalRemaining, currency);
     if (highestSpendEl) highestSpendEl.textContent = highestBudget ? highestBudget.category : 'No budgets set';
 
     if (reportLegend) {
       if (categoryEntries.length === 0) {
-        reportLegend.innerHTML = '<li>No budget categories available.</li>';
+        reportLegend.innerHTML = '<li>No expenses recorded yet.</li>';
       } else {
         const colors = ['#22C55E', '#F59E0B', '#3882F6', '#16A34A'];
         reportLegend.innerHTML = categoryEntries.map(function (entry, index) {
           const category = entry[0];
-          const amount = entry[1];
+          const amount = Number(entry[1] || 0);
           const pct = totalCategoryAmount ? Math.round((amount / totalCategoryAmount) * 100) : 0;
           return '<li><span class="legend__dot" style="background:' + colors[index % colors.length] + '"></span>' + category + ' <b>' + pct + '%</b></li>';
         }).join('');
@@ -68,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const circumference = 2 * Math.PI * 62;
       donutSegments.forEach(function (segment, index) {
         const entry = categoryEntries[index];
-        const value = entry ? entry[1] : 0;
+        const value = entry ? Number(entry[1] || 0) : 0;
         const pct = totalCategoryAmount ? (value / totalCategoryAmount) : 0;
         const dash = Math.round(circumference * pct);
         segment.style.strokeDasharray = dash + ' ' + Math.max(0, Math.round(circumference - dash));
@@ -78,6 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  window.renderSpendWiseReports = renderReport;
   renderReport();
 
   if (exportButton) {
@@ -101,4 +99,6 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
   }
+
+  window.addEventListener('spendwise:data-updated', renderReport);
 });

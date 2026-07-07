@@ -1,0 +1,214 @@
+/* =================================================================
+   SPENDWISE — ADD EXPENSE PAGE SCRIPT
+   Plain vanilla JavaScript, no frameworks or libraries.
+   ================================================================= */
+
+document.addEventListener('DOMContentLoaded', function () {
+  const CURRENCY_SYMBOLS = {
+    NGN: '₦',
+    USD: '$',
+    EUR: '€',
+    GBP: '£',
+    GHS: '₵',
+    KES: 'KSh'
+  };
+
+  function formatMoney(amount, currencyCode) {
+    const symbol = CURRENCY_SYMBOLS[currencyCode] || '₦';
+    const formattedNumber = Number(amount || 0).toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+    return symbol + formattedNumber;
+  }
+
+  const dateInput = document.getElementById('expenseDate');
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  if (dateInput && !dateInput.value) {
+    dateInput.value = yyyy + '-' + mm + '-' + dd;
+  }
+
+  const categorySelect = document.getElementById('expenseCategory');
+  const chips = document.querySelectorAll('.chip');
+  const amountInput = document.getElementById('expenseAmount');
+  const budgetImpact = document.getElementById('budgetImpact');
+  const budgetImpactLabel = document.getElementById('budgetImpactLabel');
+  const budgetImpactAmount = document.getElementById('budgetImpactAmount');
+  const budgetImpactFill = document.getElementById('budgetImpactFill');
+  const budgetImpactNote = document.getElementById('budgetImpactNote');
+  const currencySelect = document.getElementById('expenseCurrency');
+  const previewBanner = document.getElementById('previewBanner');
+  const recentExpenseList = document.getElementById('recentExpenseList');
+  const summaryTotal = document.getElementById('summaryTotal');
+  const summaryCount = document.getElementById('summaryCount');
+  const toast = document.getElementById('toast');
+  let toastTimer = null;
+
+  function renderRecentExpenses(state) {
+    if (!recentExpenseList) return;
+    const expenses = [...(state.expenses || [])].sort(function (a, b) {
+      return new Date(b.createdAt || b.date || new Date()) - new Date(a.createdAt || a.date || new Date());
+    });
+
+    recentExpenseList.innerHTML = '';
+    if (expenses.length === 0) {
+      recentExpenseList.innerHTML = '<li class="tx-item"><span class="tx-item__body"><span class="tx-item__name">No expenses yet</span><br><span class="tx-item__meta">Save your first expense to see it here.</span></span></li>';
+      return;
+    }
+
+    expenses.slice(0, 5).forEach(function (expense) {
+      const li = document.createElement('li');
+      li.className = 'tx-item';
+      const icon = expense.category === 'Food' ? '🍔' : expense.category === 'Transport' ? '🚌' : expense.category === 'Shopping' ? '🛍️' : expense.category === 'Bills' ? '🧾' : '📦';
+      li.innerHTML = '<span class="tx-item__icon" style="background:rgba(239,68,68,0.10)">' + icon + '</span>' + '<span class="tx-item__body"><span class="tx-item__name">' + expense.category + '</span><br><span class="tx-item__meta">' + (expense.date || 'Just now') + '</span></span><span class="tx-item__amount is-expense">− ' + formatMoney(expense.amount, expense.currency || SpendWise.getCurrency()) + '</span>';
+      recentExpenseList.appendChild(li);
+    });
+  }
+
+  function renderSummary(state) {
+    const expenses = state.expenses || [];
+    const total = expenses.reduce(function (sum, item) {
+      return sum + Number(item.amount || 0);
+    }, 0);
+    if (summaryTotal) summaryTotal.textContent = formatMoney(total, state.currency);
+    if (summaryCount) summaryCount.textContent = String(expenses.length);
+  }
+
+  function updateBudgetImpact() {
+    const category = categorySelect ? categorySelect.value : '';
+    const budget = (SpendWise.getBudgets() || []).find(function (item) {
+      return item.category === category;
+    });
+    const amount = Number(amountInput.value || 0);
+
+    if (!budget || !budgetImpact || !budgetImpactLabel || !budgetImpactAmount || !budgetImpactFill || !budgetImpactNote) {
+      if (budgetImpact) budgetImpact.hidden = true;
+      return;
+    }
+
+    const projectedSpent = Number(budget.spent || 0) + amount;
+    const pct = Math.min(Math.round((projectedSpent / Number(budget.amount || 1)) * 100), 999);
+    budgetImpact.hidden = false;
+    budgetImpactLabel.textContent = category + ' budget';
+    budgetImpactAmount.textContent = formatMoney(projectedSpent, budget.currency || SpendWise.getCurrency()) + ' / ' + formatMoney(budget.amount, budget.currency || SpendWise.getCurrency());
+    budgetImpactFill.style.setProperty('--fill', Math.min(pct, 100) + '%');
+
+    if (pct >= 100) {
+      budgetImpactFill.style.background = 'var(--color-red-dark)';
+      budgetImpactNote.textContent = 'This expense goes over your ' + category + ' budget for this month.';
+      budgetImpactNote.className = 'budget-impact__note is-warning';
+    } else if (pct >= 80) {
+      budgetImpactFill.style.background = 'var(--color-amber)';
+      budgetImpactNote.textContent = 'This will bring you close to your ' + category + ' budget limit.';
+      budgetImpactNote.className = 'budget-impact__note';
+    } else {
+      budgetImpactFill.style.background = 'var(--color-primary)';
+      budgetImpactNote.textContent = 'This expense keeps you within budget. Nice work!';
+      budgetImpactNote.className = 'budget-impact__note';
+    }
+  }
+
+  function updatePreview() {
+    if (!previewBanner || !amountInput || !currencySelect || !categorySelect) return;
+    const amount = amountInput.value;
+    const currency = currencySelect.value;
+    const category = categorySelect.value;
+
+    if (!amount || Number(amount) <= 0) {
+      previewBanner.innerHTML = '<span class="preview-banner__icon">✓</span><span>Fill in the amount above to see a preview here.</span>';
+      return;
+    }
+
+    const categoryText = category ? ' for ' + category : '';
+    previewBanner.innerHTML = '<span class="preview-banner__icon">✓</span><span>You are adding <strong>' + formatMoney(amount, currency) + '</strong>' + categoryText + '.</span>';
+  }
+
+  function refreshPage() {
+    const state = SpendWise.getState();
+    renderRecentExpenses(state);
+    renderSummary(state);
+    updateBudgetImpact();
+    updatePreview();
+  }
+
+  function showToast(message) {
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add('is-visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toast.classList.remove('is-visible');
+    }, 2800);
+  }
+
+  if (chips.length > 0 && categorySelect) {
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        const chosenCategory = chip.getAttribute('data-category');
+        chips.forEach(function (item) { item.classList.remove('is-selected'); });
+        chip.classList.add('is-selected');
+        categorySelect.value = chosenCategory;
+        updateBudgetImpact();
+        updatePreview();
+      });
+    });
+
+    categorySelect.addEventListener('change', function () {
+      const matchingChip = Array.from(chips).find(function (chip) {
+        return chip.getAttribute('data-category') === categorySelect.value;
+      });
+      chips.forEach(function (chip) { chip.classList.remove('is-selected'); });
+      if (matchingChip) matchingChip.classList.add('is-selected');
+      updateBudgetImpact();
+      updatePreview();
+    });
+  }
+
+  if (amountInput) {
+    amountInput.addEventListener('input', function () {
+      updateBudgetImpact();
+      updatePreview();
+    });
+  }
+  if (currencySelect) currencySelect.addEventListener('change', updatePreview);
+
+  const form = document.getElementById('expenseForm');
+  if (form) {
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      const amount = Number(amountInput.value || 0);
+      const currency = currencySelect ? currencySelect.value : SpendWise.getCurrency();
+      const category = categorySelect ? categorySelect.value : '';
+      const notes = document.getElementById('expenseNotes').value;
+
+      if (!category || amount <= 0) {
+        showToast('Please fill in the amount and category before saving.');
+        return;
+      }
+
+      const state = SpendWise.getState();
+      const entry = {
+        id: 'expense-' + Date.now(),
+        category: category,
+        amount: amount,
+        currency: currency,
+        date: dateInput.value || new Date().toISOString(),
+        notes: notes,
+        createdAt: new Date().toISOString()
+      };
+      SpendWise.saveState({ expenses: [...(state.expenses || []), entry] });
+      event.target.reset();
+      if (dateInput) dateInput.value = yyyy + '-' + mm + '-' + dd;
+      chips.forEach(function (chip) { chip.classList.remove('is-selected'); });
+      if (budgetImpact) budgetImpact.hidden = true;
+      updatePreview();
+      showToast('Expense of ' + formatMoney(amount, currency) + ' saved successfully.');
+    });
+  }
+
+  window.addEventListener('spendwise:data-updated', refreshPage);
+  refreshPage();
+});

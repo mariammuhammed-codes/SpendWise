@@ -337,6 +337,12 @@
       budgetCategory.focus();
     });
 
+    window.renderBudgetPage = function () {
+      loadBudgets();
+      renderBudgetList();
+    };
+
+    window.addEventListener('spendwise:data-updated', window.renderBudgetPage);
     loadBudgets();
     renderBudgetList();
   </script>
