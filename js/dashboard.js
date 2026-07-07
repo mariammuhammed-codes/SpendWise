@@ -271,26 +271,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  if (menuToggle && sidebar && backdrop) {
-    menuToggle.addEventListener('click', function () {
-      sidebar.classList.contains('is-open') ? sidebar.classList.remove('is-open') : sidebar.classList.add('is-open');
-      backdrop.hidden = !sidebar.classList.contains('is-open');
-      menuToggle.setAttribute('aria-expanded', String(sidebar.classList.contains('is-open')));
-    });
-    backdrop.addEventListener('click', function () {
-      sidebar.classList.remove('is-open');
-      backdrop.hidden = true;
-      menuToggle.setAttribute('aria-expanded', 'false');
-    });
-    document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape') {
-        sidebar.classList.remove('is-open');
-        backdrop.hidden = true;
-        menuToggle.setAttribute('aria-expanded', 'false');
-      }
-    });
-  }
-
   document.querySelectorAll('[data-open-modal]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       openModal(btn.getAttribute('data-open-modal'));

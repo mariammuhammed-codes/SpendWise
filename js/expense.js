@@ -164,25 +164,11 @@ document.addEventListener('DOMContentLoaded', function () {
   const menuToggle = document.getElementById('menuToggle');
   const backdrop = document.getElementById('backdrop');
 
-  function openSidebar() {
-    sidebar.classList.add('is-open');
-    backdrop.hidden = false;
-    menuToggle.setAttribute('aria-expanded', 'true');
+  // The shared mobile navigation logic in common.js handles the hamburger
+  // behavior for all pages, so this page does not need its own duplicate listeners.
+  if (menuToggle && sidebar && backdrop && menuToggle.dataset.spendwiseBound !== 'true') {
+    menuToggle.dataset.spendwiseBound = 'true';
   }
-  function closeSidebar() {
-    sidebar.classList.remove('is-open');
-    backdrop.hidden = true;
-    menuToggle.setAttribute('aria-expanded', 'false');
-  }
-  if (menuToggle) {
-    menuToggle.addEventListener('click', function () {
-      sidebar.classList.contains('is-open') ? closeSidebar() : openSidebar();
-    });
-  }
-  if (backdrop) backdrop.addEventListener('click', closeSidebar);
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeSidebar();
-  });
 
   const notifBtn = document.getElementById('notifBtn') || document.querySelector('.icon-btn[aria-label^="View notifications"]');
   const notifPanel = document.getElementById('notifPanel');
