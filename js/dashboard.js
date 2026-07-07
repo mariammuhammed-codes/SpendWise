@@ -59,15 +59,9 @@ document.addEventListener('DOMContentLoaded', function () {
     Other:     { icon: '📦', bg: 'rgba(100,116,139,0.14)' }
   };
 
-  // Starting sample data, so the dashboard looks alive on first load.
-  // type is either 'income' or 'expense'.
-  let transactions = [
-    { type: 'expense', category: 'Transport', amount: 2500, currency: 'NGN', date: 'Today, 06:30 AM', notes: '' },
-    { type: 'expense', category: 'Food',      amount: 1800, currency: 'NGN', date: 'Today, 01:15 PM', notes: '' },
-    { type: 'income',  category: 'Salary',    amount: 50000, currency: 'NGN', date: 'Yesterday, 09:00 AM', notes: '' },
-    { type: 'expense', category: 'Shopping',  amount: 3200, currency: 'NGN', date: 'Yesterday, 04:45 PM', notes: '' },
-    { type: 'expense', category: 'Bills',     amount: 1500, currency: 'NGN', date: '01 Jun, 07:20 PM', notes: '' }
-  ];
+  // Starting transaction data are loaded from persistent SpendWise state.
+  // If no persisted transactions exist, start with an empty list.
+  let transactions = SpendWise.getTransactions() || [];
 
   const txListEl = document.getElementById('txList');
   let currentFilter = 'all';
@@ -327,14 +321,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!amount || !source) return; // required fields already enforced by browser
 
-    transactions.unshift({
+    const transaction = {
       type: 'income',
       category: source,
       amount: Number(amount),
       currency: currency,
       date: 'Just now',
       notes: document.getElementById('incomeNotes').value
-    });
+    };
+    transactions.unshift(transaction);
+    SpendWise.saveTransactions(transactions);
 
     renderTransactions();
     updateBalanceCard();
@@ -352,14 +348,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!amount || !category) return;
 
-    transactions.unshift({
+    const transaction = {
       type: 'expense',
       category: category,
       amount: Number(amount),
       currency: currency,
       date: 'Just now',
       notes: document.getElementById('expenseNotes').value
-    });
+    };
+    transactions.unshift(transaction);
+    SpendWise.saveTransactions(transactions);
 
     renderTransactions();
     updateBalanceCard();

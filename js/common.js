@@ -28,6 +28,7 @@ const SpendWise = {
       reminders: {},
       budgets: [],
       savings: [],
+      transactions: [],
       ...stored
     };
   },
@@ -84,6 +85,14 @@ const SpendWise = {
 
   saveSavings(savings) {
     this.saveState({ savings });
+  },
+
+  getTransactions() {
+    return this.getState().transactions || [];
+  },
+
+  saveTransactions(transactions) {
+    this.saveState({ transactions });
   },
 
   getProfile() {
