@@ -64,6 +64,12 @@ function syncBudgetsWithExpenses(state) {
 
 function buildStateFromStorage(stored) {
   const defaults = createDemoState();
+  const expenses = Array.isArray(stored.expenses) ? stored.expenses : defaults.expenses;
+  const income = Array.isArray(stored.income) ? stored.income : defaults.income;
+  const transactions = Array.isArray(stored.transactions) && stored.transactions.length > 0
+    ? stored.transactions
+    : deriveTransactionsFromState({ ...defaults, ...stored, expenses, income });
+
   return syncBudgetsWithExpenses({
     ...defaults,
     ...stored,
@@ -71,9 +77,10 @@ function buildStateFromStorage(stored) {
     backups: { ...defaults.backups, ...(stored.backups || {}) },
     reminders: { ...(defaults.reminders || {}), ...(stored.reminders || {}) },
     budgets: Array.isArray(stored.budgets) ? stored.budgets : defaults.budgets,
-    expenses: Array.isArray(stored.expenses) ? stored.expenses : defaults.expenses,
-    income: Array.isArray(stored.income) ? stored.income : defaults.income,
-    savings: Array.isArray(stored.savings) ? stored.savings : defaults.savings
+    expenses,
+    income,
+    savings: Array.isArray(stored.savings) ? stored.savings : defaults.savings,
+    transactions
   });
 }
 
@@ -96,6 +103,102 @@ function notifySpendWiseDataChanged() {
   if (typeof window !== 'undefined' && window.dispatchEvent) {
     window.dispatchEvent(new Event('spendwise:data-updated'));
   }
+}
+
+function normalizeTransactionEntry(entry, defaultType) {
+  const item = entry || {};
+  const type = item.type || defaultType || 'expense';
+  return {
+    id: item.id || type + '-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+    type,
+    category: item.category || item.source || 'Others',
+    amount: Number(item.amount || 0),
+    currency: item.currency || 'NGN',
+    date: item.date || item.createdAt || new Date().toISOString(),
+    notes: item.notes || '',
+    createdAt: item.createdAt || new Date().toISOString()
+  };
+}
+
+function normalizeTransactions(entries) {
+  return (entries || []).map(function (entry) {
+    return normalizeTransactionEntry(entry, entry && entry.type ? entry.type : 'expense');
+  });
+}
+
+function deriveTransactionsFromState(state) {
+  const expenses = Array.isArray(state.expenses) ? state.expenses : [];
+  const income = Array.isArray(state.income) ? state.income : [];
+  const explicitTransactions = Array.isArray(state.transactions) && state.transactions.length > 0
+    ? normalizeTransactions(state.transactions)
+    : [];
+
+  if (explicitTransactions.length > 0) {
+    return explicitTransactions;
+  }
+
+  const expenseTransactions = expenses.map(function (entry) {
+    return normalizeTransactionEntry({ ...entry, type: 'expense' }, 'expense');
+  });
+  const incomeTransactions = income.map(function (entry) {
+    return normalizeTransactionEntry({ ...entry, type: 'income' }, 'income');
+  });
+
+  return expenseTransactions.concat(incomeTransactions).sort(function (a, b) {
+    return new Date(b.createdAt || b.date || new Date()) - new Date(a.createdAt || a.date || new Date());
+  });
+}
+
+function calculateTransactionTotals(transactions) {
+  const items = normalizeTransactions(transactions || []);
+  const incomeTotal = items.filter(function (item) {
+    return item.type === 'income';
+  }).reduce(function (sum, item) {
+    return sum + Number(item.amount || 0);
+  }, 0);
+  const expenseTotal = items.filter(function (item) {
+    return item.type === 'expense';
+  }).reduce(function (sum, item) {
+    return sum + Number(item.amount || 0);
+  }, 0);
+  return {
+    count: items.length,
+    income: incomeTotal,
+    expense: expenseTotal,
+    net: incomeTotal - expenseTotal
+  };
+}
+
+function renderRecentTransactions(container, state) {
+  if (!container) return [];
+
+  const transactions = normalizeTransactions(
+    Array.isArray(state && state.transactions) && state.transactions.length > 0
+      ? state.transactions
+      : SpendWise.getTransactions()
+  );
+  const sortedTransactions = transactions.slice().sort(function (a, b) {
+    return new Date(b.createdAt || b.date || new Date()) - new Date(a.createdAt || a.date || new Date());
+  });
+
+  container.innerHTML = '';
+  if (sortedTransactions.length === 0) {
+    container.innerHTML = '<li class="tx-item"><span class="tx-item__body"><span class="tx-item__name">No recent transactions.</span><br><span class="tx-item__meta">Add income or expense entries to see them here.</span></span></li>';
+    return sortedTransactions;
+  }
+
+  sortedTransactions.forEach(function (item) {
+    const li = document.createElement('li');
+    li.className = 'tx-item';
+    const isExpense = item.type === 'expense';
+    const sign = isExpense ? '- ' : '+ ';
+    const amountClass = isExpense ? 'is-expense' : 'is-income';
+    const icon = item.category === 'Food' ? '🍔' : item.category === 'Transport' ? '🚌' : item.category === 'Shopping' ? '🛍️' : item.category === 'Bills' ? '🧾' : item.category === 'Salary' || item.category === 'Business' || item.category === 'Gift' ? '💰' : '📦';
+    li.innerHTML = '<span class="tx-item__icon" style="background:' + (isExpense ? 'rgba(239,68,68,0.10)' : 'rgba(34,197,94,0.14)') + '">' + icon + '</span>' + '<span class="tx-item__body"><span class="tx-item__name">' + item.category + '</span><br><span class="tx-item__meta">' + (item.notes || 'Saved from local data') + '</span></span><span class="tx-item__amount ' + amountClass + '">' + sign + formatSpendWiseAmount(item.amount, item.currency || SpendWise.getCurrency()) + '</span>';
+    container.appendChild(li);
+  });
+
+  return sortedTransactions;
 }
 
 const SpendWise = {
@@ -123,7 +226,17 @@ return buildStateFromStorage({
 
   saveState(changes) {
     const state = this.getState();
-    const merged = syncBudgetsWithExpenses({ ...state, ...changes });
+    const nextState = { ...state, ...changes };
+    const expenses = Array.isArray(changes && changes.expenses)
+      ? changes.expenses
+      : (Array.isArray(nextState.expenses) ? nextState.expenses : state.expenses || []);
+    const income = Array.isArray(changes && changes.income)
+      ? changes.income
+      : (Array.isArray(nextState.income) ? nextState.income : state.income || []);
+    const transactions = Array.isArray(changes && changes.transactions)
+      ? changes.transactions
+      : deriveTransactionsFromState({ ...nextState, expenses, income });
+    const merged = syncBudgetsWithExpenses({ ...nextState, expenses, income, transactions });
     spendwiseSaveState(merged);
     notifySpendWiseDataChanged();
     return merged;
@@ -175,7 +288,26 @@ return buildStateFromStorage({
   },
 
   saveExpenses(expenses) {
-    return this.saveState({ expenses });
+    const state = this.getState();
+    const nextExpenses = (expenses || []).map(function (expense, index) {
+      return {
+        ...expense,
+        id: expense.id || 'expense-' + Date.now() + '-' + index,
+        amount: Number(expense.amount || 0),
+        currency: expense.currency || state.currency || 'NGN',
+        date: expense.date || expense.createdAt || new Date().toISOString(),
+        createdAt: expense.createdAt || new Date().toISOString()
+      };
+    });
+    const nextTransactions = normalizeTransactions([
+      ...(state.transactions || []).filter(function (item) {
+        return item.type !== 'expense';
+      }),
+      ...nextExpenses.map(function (expense) {
+        return normalizeTransactionEntry({ ...expense, type: 'expense' }, 'expense');
+      })
+    ]);
+    return this.saveState({ expenses: nextExpenses, transactions: nextTransactions });
   },
 
   getIncome() {
@@ -183,7 +315,26 @@ return buildStateFromStorage({
   },
 
   saveIncome(income) {
-    return this.saveState({ income });
+    const state = this.getState();
+    const nextIncome = (income || []).map(function (entry, index) {
+      return {
+        ...entry,
+        id: entry.id || 'income-' + Date.now() + '-' + index,
+        amount: Number(entry.amount || 0),
+        currency: entry.currency || state.currency || 'NGN',
+        date: entry.date || entry.createdAt || new Date().toISOString(),
+        createdAt: entry.createdAt || new Date().toISOString()
+      };
+    });
+    const nextTransactions = normalizeTransactions([
+      ...(state.transactions || []).filter(function (item) {
+        return item.type !== 'income';
+      }),
+      ...nextIncome.map(function (entry) {
+        return normalizeTransactionEntry({ ...entry, type: 'income' }, 'income');
+      })
+    ]);
+    return this.saveState({ income: nextIncome, transactions: nextTransactions });
   },
 
   getSavings() {
@@ -195,11 +346,38 @@ return buildStateFromStorage({
   },
 
   getTransactions() {
-    return this.getState().transactions || [];
+    return deriveTransactionsFromState(this.getState());
   },
 
   saveTransactions(transactions) {
-    this.saveState({ transactions });
+    const normalized = normalizeTransactions(transactions || []);
+    const expenses = normalized.filter(function (item) {
+      return item.type === 'expense';
+    }).map(function (item) {
+      return {
+        id: item.id,
+        category: item.category,
+        amount: Number(item.amount || 0),
+        currency: item.currency || 'NGN',
+        date: item.date,
+        notes: item.notes,
+        createdAt: item.createdAt
+      };
+    });
+    const income = normalized.filter(function (item) {
+      return item.type === 'income';
+    }).map(function (item) {
+      return {
+        id: item.id,
+        category: item.category,
+        amount: Number(item.amount || 0),
+        currency: item.currency || 'NGN',
+        date: item.date,
+        notes: item.notes,
+        createdAt: item.createdAt
+      };
+    });
+    return this.saveState({ transactions: normalized, expenses, income });
   },
 
   getProfile() {
@@ -527,30 +705,7 @@ function updateDashboard() {
 
   const txListEl = document.getElementById('txList');
   if (txListEl) {
-    const txItems = [...(state.expenses || []), ...(state.income || [])]
-      .slice()
-      .sort(function (a, b) {
-        return new Date(b.createdAt || b.date || new Date()) - new Date(a.createdAt || a.date || new Date());
-      });
-
-    txListEl.innerHTML = '';
-    if (txItems.length === 0) {
-      txListEl.innerHTML = '<li class="tx-item"><span class="tx-item__body"><span class="tx-item__name">No transactions yet</span><br><span class="tx-item__meta">Add income or expense entries to see them here.</span></span></li>';
-      return;
-    }
-
-    txItems.forEach(function (item) {
-      const li = document.createElement('li');
-      li.className = 'tx-item';
-      const isExpense = item.category && state.expenses.some(function (expense) {
-        return expense.id === item.id;
-      });
-      const sign = isExpense ? '- ' : '+ ';
-      const amountClass = isExpense ? 'is-expense' : 'is-income';
-      const icon = item.category === 'Food' ? '🍔' : item.category === 'Transport' ? '🚌' : item.category === 'Shopping' ? '🛍️' : item.category === 'Bills' ? '🧾' : item.category === 'Salary' || item.category === 'Business' || item.category === 'Gift' ? '💰' : '📦';
-      li.innerHTML = '<span class="tx-item__icon" style="background:' + (isExpense ? 'rgba(239,68,68,0.10)' : 'rgba(34,197,94,0.14)') + '">' + icon + '</span>' + '<span class="tx-item__body"><span class="tx-item__name">' + item.category + '</span><br><span class="tx-item__meta">' + (item.notes || 'Saved from local data') + '</span></span><span class="tx-item__amount ' + amountClass + '">' + sign + formatSpendWiseAmount(item.amount, item.currency || state.currency) + '</span>';
-      txListEl.appendChild(li);
-    });
+    renderRecentTransactions(txListEl, state);
   }
 }
 
@@ -606,3 +761,5 @@ window.updateBudgetPage = updateBudgetPage;
 window.updateReports = updateReports;
 window.renderBudgetSnapshot = renderBudgetSnapshot;
 window.formatSpendWiseAmount = formatSpendWiseAmount;
+window.renderRecentTransactions = renderRecentTransactions;
+window.calculateTransactionTotals = calculateTransactionTotals;
