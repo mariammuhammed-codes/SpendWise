@@ -1,0 +1,232 @@
+/* ===== SpendWise shared design tokens ===== */
+:root {
+  --green: #22C55E;
+  --green-dark: #16A34A;
+  --blue: #3B82F6;
+  --orange: #F59E0B;
+  --grey: #64748B;
+  --bg: #F1F5F9;
+  --white: #FFFFFF;
+  --text: #0F172A;
+  --muted: #64748B;
+  --radius: 20px;
+  --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --shadow-sm: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Poppins', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0;
+}
+
+.app {
+  width: 100%;
+  max-width: 100%;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 100vh;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* ===== Header ===== */
+.app-header {
+  background: linear-gradient(135deg, var(--green), var(--green-dark));
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 18px;
+}
+.app-title { font-size: 1.15rem; font-weight: 600; }
+.icon-btn {
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--white);
+  border: none;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  cursor: pointer; position: relative;
+  transition: background 0.2s ease;
+}
+.icon-btn:hover { background: rgba(255, 255, 255, 0.3); }
+.badge {
+  position: absolute; top: 8px; right: 9px;
+  width: 8px; height: 8px;
+  background: var(--orange);
+  border-radius: 50%;
+  border: 2px solid var(--green-dark);
+}
+
+/* ===== Content ===== */
+.content { flex: 1; padding: 20px 18px 90px; }
+
+.section-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--grey);
+  margin: 22px 0 14px;
+}
+
+/* Tip of the Day */
+.tip-of-day {
+  background: linear-gradient(135deg, var(--green), var(--green-dark));
+  color: var(--white);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 12px 26px rgba(34, 197, 94, 0.3);
+}
+.tod-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.9;
+  margin-bottom: 12px;
+}
+.tod-icon {
+  width: 56px; height: 56px;
+  margin: 0 auto 14px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 16px;
+  display: grid; place-items: center;
+}
+.tod-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 8px; }
+.tod-desc { font-size: 0.9rem; opacity: 0.95; line-height: 1.5; }
+
+.fade-swap { animation: fadeSwap 0.4s ease; }
+@keyframes fadeSwap {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-another {
+  margin-top: 18px;
+  background: var(--white);
+  color: var(--green-dark);
+  border: none;
+  padding: 12px 22px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-another:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
+.btn-another:active { transform: translateY(0); }
+
+/* Tips grid */
+.tips-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+.tip-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--white);
+  border: 1px solid #eef2f6;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 16px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  animation: fadeSwap 0.35s ease both;
+}
+.tip-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
+}
+.tip-icon {
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+  color: var(--white);
+}
+.tip-body h3 { font-size: 0.98rem; font-weight: 600; margin-bottom: 4px; }
+.tip-body p { font-size: 0.82rem; color: var(--muted); line-height: 1.45; }
+
+/* ===== Bottom nav ===== */
+.bottom-nav {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: var(--white);
+  border-top: 1px solid #eef2f6;
+  display: flex; justify-content: space-around;
+  padding: 10px 6px;
+}
+.nav-item {
+  text-decoration: none; color: var(--grey);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-size: 0.72rem; font-weight: 500;
+  padding: 6px 10px; border-radius: 14px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+.nav-item.active { color: var(--green); background: rgba(34, 197, 94, 0.1); }
+.nav-item:hover { color: var(--green-dark); }
+
+/* ===== Responsive ===== */
+/* ==========================================================================
+   UPDATED RESPONSIVE BREAKPOINTS (TABLET & DESKTOP FRAMEWORK)
+   ========================================================================== */
+
+/* 1. Mobile Optimization Tweaks (For very small screens) */
+@media (max-width: 380px) {
+  .content { padding: 16px 14px 90px; }
+  .tip-card { padding: 14px; gap: 10px; }
+  .tip-icon { width: 40px; height: 40px; }
+}
+
+/* 2. Tablet Layout (Screens 600px wide up to 1024px) */
+@media (min-width: 600px) {
+  body {
+    padding: 24px; /* Centers the canvas inside the viewport with outer breathing space */
+    align-items: center;
+  }
+  
+  .app {
+    max-width: 650px; /* Expands width to cleanly showcase your app data */
+    min-height: 80vh; /* Converts standard viewport into an independent app frame */
+    max-height: 90vh;
+    border-radius: var(--radius); /* Re-applies rounded corners */
+    box-shadow: var(--shadow); /* Adds the gorgeous elevation background depth back */
+    overflow: hidden;
+  }
+
+  /* Split your reminders list into an elegant 2-column layout on tablets */
+  .tod-icon {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+/* 3. Desktop, TV, & Large Monitor Layout (Screens 1025px and up) */
+@media (min-width: 1025px) {
+  .app {
+    max-width: 900px; /* Spreads out beautifully to match desktop layout standards */
+    max-height: 800px;
+  }
+
+  /* Expands layout further into 3 parallel dashboard rows */
+  .tod-icon {
+    grid-template-columns: repeat(3, 1fr); 
+  }
+  
+  /* Positions the bottom navigation sticky to the container bounds cleanly */
+  .bottom-nav {
+    border-bottom-left-radius: var(--radius);
+    border-bottom-right-radius: var(--radius);
+  }
+}

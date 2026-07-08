@@ -1,231 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SpendWise — Reminders</title>
-  <link rel="stylesheet" href="../css/dashboard.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    .reminders-list { max-width:920px; margin:0 auto; display:flex; flex-direction:column; gap:14px; }
-    .reminder-row { display:flex; align-items:center; gap:16px; background:var(--color-white); border:1px solid var(--color-border); padding:14px; border-radius:12px; box-shadow:var(--shadow-sm); }
-    .reminder-icon { width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.45rem; flex-shrink:0; }
-    .reminder-body { flex:1; }
-    .reminder-title { font-weight:700; margin:0 0 4px 0; }
-    .reminder-desc { margin:0; color:var(--color-text-muted); font-size:0.92rem; }
-
-    /* simple iOS-like switch */
-    .switch-wrap { display:inline-flex; align-items:center; gap:10px; }
-    .switch { width:44px; height:26px; background:var(--color-border); border-radius:999px; position:relative; transition:background 160ms var(--ease); }
-    .switch::after { content:''; position:absolute; left:4px; top:3px; width:20px; height:20px; background:white; border-radius:50%; box-shadow:var(--shadow-sm); transition:transform 160ms var(--ease); }
-    input.switch-input { position:absolute; opacity:0; width:1px; height:1px; }
-    input.switch-input:checked + .switch { background:linear-gradient(145deg,var(--color-primary),var(--color-primary-dark)); }
-    input.switch-input:checked + .switch::after { transform:translateX(18px); }
-
-    .reminders-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
-    .reminders-hero { max-width:760px; }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/reminder.css" />
 </head>
 <body>
-  <a href="#main-content" class="skip-link">Skip to main content</a>
-  <div class="app-shell">
-    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
-      <div class="sidebar__brand">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 21C7 21 3 17 3 11.5C3 7 6 3 12 3C16 3 20 6 20 11C20 12 19.8 13 19.5 13.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            <path d="M12 21C12 21 12 14 18 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-        </span>
-        <span class="brand-text">
-          SpendWise
-          <small>Smart Budgeting, Better Future</small>
-        </span>
-      </div>
-      <nav class="sidebar__nav">
-        <a href="dashboard.html" class="nav-link">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 11.5L12 4l8 7.5M6 10v9a1 1 0 001 1h4v-6h2v6h4a1 1 0 001-1v-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Home</span>
-        </a>
-        <a href="budget.html" class="nav-link">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="14" rx="2.2" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 9.5h17" stroke="currentColor" stroke-width="1.8"/></svg>
-          <span>Budget</span>
-        </a>
-        <a href="savings.html" class="nav-link">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.3" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
-          <span>Savings Goals</span>
-        </a>
-        <a href="reports.html" class="nav-link">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 19V10M10 19V5M16 19v-7M4 19h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Reports</span>
-        </a>
-        <a href="transactions.html" class="nav-link">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l5 5v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 11h8M8 15h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          <span>Transactions</span>
-        </a>
-        <a href="reminder.html" class="nav-link is-active" aria-current="page">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M6 8a6 6 0 1112 0c0 4 1.6 5.5 2 6.5H4c.4-1 2-2.5 2-6.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 18a2.5 2.5 0 005 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          <span>Reminders</span>
-        </a>
-      </nav>
-      <div class="sidebar__footer">
-        <a href="profile.html" class="nav-link">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.2" r="3.4" stroke="currentColor" stroke-width="1.8"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          <span>Profile</span>
-        </a>
-        <a href="login.html" class="nav-link nav-link--danger">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M15 17l5-5-5-5M20 12H8M12 4H6a2 2 0 00-2 2v12a2 2 0 002 2h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Log Out</span>
-        </a>
-      </div>
-    </aside>
+  <div class="app">
+    <!-- Header -->
+    <header class="app-header">
+      <button class="icon-btn" aria-label="Go back">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1 class="app-title">Reminders</h1>
+      <button class="icon-btn" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="badge"></span>
+      </button>
+    </header>
 
-    <div class="main-column">
-      <header class="topbar">
-        <button class="icon-btn topbar__menu-btn" id="menuToggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
-        </button>
-        <div class="topbar__greeting">
-          <p class="greeting-eyebrow">Settings</p>
-          <h1 class="greeting-name">Reminders <span aria-hidden="true">🔔</span></h1>
-        </div>
-        <div class="topbar__actions">
-          <div class="currency-pill" title="Your main currency"><span>NGN (₦)</span></div>
-          <a href="profile.html" class="avatar-btn" aria-label="Open profile page">MA</a>
-        </div>
-      </header>
+    <main class="content">
+      <p class="intro">Manage what you get notified about.</p>
+      <div class="reminder-list" id="reminderList"></div>
+    </main>
 
-      <main id="main-content" class="page">
-        <section class="page-heading">
-          <div class="reminders-hero">
-            <p class="eyebrow">Reminders</p>
-            <h2>Reminders & Alerts</h2>
-            <p>Get notified about budgets, bills and savings goals so you never miss an important payment.</p>
-          </div>
-        </section>
-
-        <section class="content-grid">
-          <div class="card">
-            <div class="card__header">
-              <h2>Manage reminders</h2>
-              <span class="card__badge">Active</span>
-            </div>
-            <div class="card__body">
-              <div class="reminders-list">
-                <div class="reminder-row" data-reminder-id="budgetAlerts">
-                  <div class="reminder-icon" style="background:rgba(34,197,94,0.12);">⚠️</div>
-                  <div class="reminder-body">
-                    <p class="reminder-title">Budget alerts</p>
-                    <p class="reminder-desc">Get notified when you're getting close to a budget limit.</p>
-                    <div class="reminder-actions" style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                      <button type="button" class="btn btn--secondary set-date-btn">Set date</button>
-                      <span class="reminder-date-label">No date selected</span>
-                    </div>
-                    <div class="reminder-date-panel" hidden style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                      <label class="sr-only" for="budgetAlertsDate">Select date</label>
-                      <input class="reminder-date-input" id="budgetAlertsDate" type="date" />
-                      <button type="button" class="btn reminder-save-date">Enter</button>
-                    </div>
-                  </div>
-                  <label class="switch-wrap">
-                    <input class="switch-input" id="budgetAlerts" type="checkbox">
-                    <span class="switch" aria-hidden="true"></span>
-                  </label>
-                </div>
-
-                <div class="reminder-row" data-reminder-id="billReminders">
-                  <div class="reminder-icon" style="background:rgba(245,158,11,0.12);">💸</div>
-                  <div class="reminder-body">
-                    <p class="reminder-title">Bill reminders</p>
-                    <p class="reminder-desc">Never miss a bill payment — get a reminder before due dates.</p>
-                    <div class="reminder-actions" style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                      <button type="button" class="btn btn--secondary set-date-btn">Set date</button>
-                      <span class="reminder-date-label">No date selected</span>
-                    </div>
-                    <div class="reminder-date-panel" hidden style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                      <label class="sr-only" for="billRemindersDate">Select date</label>
-                      <input class="reminder-date-input" id="billRemindersDate" type="date" />
-                      <button type="button" class="btn reminder-save-date">Enter</button>
-                    </div>
-                  </div>
-                  <label class="switch-wrap">
-                    <input class="switch-input" id="billReminders" type="checkbox">
-                    <span class="switch" aria-hidden="true"></span>
-                  </label>
-                </div>
-
-                <div class="reminder-row" data-reminder-id="savingsGoals">
-                  <div class="reminder-icon" style="background:rgba(34,197,94,0.12);">🎯</div>
-                  <div class="reminder-body">
-                    <p class="reminder-title">Savings goals</p>
-                    <p class="reminder-desc">Get progress reminders for your savings goals.</p>
-                    <div class="reminder-actions" style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                      <button type="button" class="btn btn--secondary set-date-btn">Set date</button>
-                      <span class="reminder-date-label">No date selected</span>
-                    </div>
-                    <div class="reminder-date-panel" hidden style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                      <label class="sr-only" for="savingsGoalsDate">Select date</label>
-                      <input class="reminder-date-input" id="savingsGoalsDate" type="date" />
-                      <button type="button" class="btn reminder-save-date">Enter</button>
-                    </div>
-                  </div>
-                  <label class="switch-wrap">
-                    <input class="switch-input" id="savingsGoals" type="checkbox">
-                    <span class="switch" aria-hidden="true"></span>
-                  </label>
-                </div>
-
-                <div class="reminder-row" data-reminder-id="dailySummary">
-                  <div class="reminder-icon" style="background:rgba(56,130,246,0.08);">📊</div>
-                  <div class="reminder-body">
-                    <p class="reminder-title">Daily summary</p>
-                    <p class="reminder-desc">Receive a daily summary of your spending and balances.</p>
-                    <div class="reminder-actions" style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                      <button type="button" class="btn btn--secondary set-date-btn">Set date</button>
-                      <span class="reminder-date-label">No date selected</span>
-                    </div>
-                    <div class="reminder-date-panel" hidden style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                      <label class="sr-only" for="dailySummaryDate">Select date</label>
-                      <input class="reminder-date-input" id="dailySummaryDate" type="date" />
-                      <button type="button" class="btn reminder-save-date">Enter</button>
-                    </div>
-                  </div>
-                  <label class="switch-wrap">
-                    <input class="switch-input" id="dailySummary" type="checkbox">
-                    <span class="switch" aria-hidden="true"></span>
-                  </label>
-                </div>
-
-              </div>
-            </div>
-          </div>
-        </section>
-
-      </main>
-      <footer class="page-footer"><p>© 2026 SpendWise. Your money, made simple.</p></footer>
-    </div>
+    <!-- Footer Navigation -->
+    <nav class="bottom-nav" aria-label="Primary">
+      <a href="#" class="nav-item active">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 9.5 12 3l9 6.5V21H3V9.5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        <span>Home</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 6h16v12H4zM4 10h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        <span>Budget</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Reports</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+        <span>More</span>
+      </a>
+    </nav>
   </div>
 
-  <div class="backdrop" id="backdrop" hidden></div>
-
-  <script src="../js/common.js"></script>
   <script src="../js/reminder.js"></script>
-  <script>
-    // Persist toggle state to localStorage
-    (function (){
-      const keys = ['budgetAlerts','billReminders','savingsGoals','dailySummary'];
-      keys.forEach(function(k){
-        const el = document.getElementById(k);
-        if (!el) return;
-        // load
-        try{ const saved = localStorage.getItem('reminder.'+k); if (saved!==null) el.checked = saved === '1'; }catch(e){}
-        // save on change
-        el.addEventListener('change', function(){
-          try{ localStorage.setItem('reminder.'+k, el.checked ? '1' : '0'); }catch(e){}
-        });
-      });
-    })();
-  </script>
 </body>
 </html>

@@ -1,0 +1,261 @@
+:root {
+  --green: #22c55e;
+  --green-dark: #16a34a;
+  --blue: #3882f6;
+  --orange: #f59e0b;
+  --grey: #64748b;
+  --bg-soft: #f1f5f9;
+  --white: #ffffff;
+  --text: #1e293b;
+  --radius: 20px;
+  --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --shadow-soft: 0 4px 16px rgba(15, 23, 42, 0.06);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Poppins', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0;
+}
+
+.phone {
+  width: 100%;
+  max-width: 100%;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 100vh;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 20px 16px;
+}
+
+.app-title { font-size: 1.15rem; font-weight: 600; }
+
+.icon-btn {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 14px;
+  background: var(--bg-soft);
+  color: var(--grey);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.icon-btn:hover { background: #e2e8f0; }
+.icon-btn:active { transform: scale(0.94); }
+
+.dot {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  background: var(--orange);
+  border-radius: 50%;
+  border: 2px solid var(--bg-soft);
+}
+
+/* Content */
+.content {
+  flex: 1;
+  padding: 8px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  background: var(--white);
+  border: 1px solid #eef2f7;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  padding: 22px;
+}
+
+.section-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--grey);
+  margin-bottom: 16px;
+}
+
+/* Mode toggle */
+.mode-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.mode-btn {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 16px 12px;
+  border-radius: var(--radius);
+  border: 2px solid #e2e8f0;
+  background: var(--white);
+  color: var(--grey);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+
+.mode-btn:hover { border-color: var(--green); }
+
+.mode-btn.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--white);
+  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Illustration */
+.illustration-card {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 34px 26px;
+}
+
+.illustration {
+  position: relative;
+  height: 150px;
+  width: 180px;
+  display: grid;
+  place-items: center;
+}
+
+.illustration svg {
+  position: absolute;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.illo-business {
+  opacity: 0;
+  transform: scale(0.85) rotate(-4deg);
+}
+
+.illustration.business .illo-personal {
+  opacity: 0;
+  transform: scale(0.85) rotate(4deg);
+}
+
+.illustration.business .illo-business {
+  opacity: 1;
+  transform: scale(1) rotate(0);
+}
+
+.illo-text {
+  color: var(--grey);
+  font-size: 0.98rem;
+  line-height: 1.6;
+  max-width: 280px;
+}
+
+/* Bottom nav */
+.bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 12px 8px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid #eef2f7;
+  background: var(--white);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  color: var(--grey);
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 12px;
+  transition: color 0.2s ease;
+}
+
+.nav-item.active { color: var(--green); }
+.nav-item:active { transform: scale(0.95); }
+
+/* ==========================================================================
+   SPENDWISE PERSONAL/BUSINESS RESPONSIVE LAYOUT FRAMEWORK
+   ========================================================================== */
+
+/* 1. Tablet View (Screens 600px wide up to 1024px) */
+@media (min-width: 600px) {
+  body {
+    padding: 24px;
+    align-items: center; /* Centers the whole app window nicely on screen */
+  }
+
+  .phone {
+    max-width: 680px; /* Expands the mobile container wide enough for tablet views */
+    min-height: 80vh;
+    max-height: 90vh;
+    border-radius: 24px; /* Gives the screen clean rounded desktop-app edges */
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); /* Re-adds depth backdrop */
+    overflow: hidden;
+  }
+
+  /* Rearranges your two main dashboard panels side-by-side */
+  .content {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Splitting space into 2 equal columns */
+    gap: 20px;
+    padding: 24px 20px 90px;
+    align-items: start; /* Keeps cards aligned clean along the top edge */
+  }
+}
+
+/* 2. Desktop & Massive Monitors (Screens 1025px and up) */
+@media (min-width: 1025px) {
+  .phone {
+    max-width: 850px; /* Stretches wider on desktop monitors for structural breathing room */
+    max-height: 750px;
+  }
+
+  .content {
+    gap: 32px; /* Adds wider layout gaps on large displays */
+    padding: 32px 24px 90px;
+  }
+  
+  /* Forces the layout toggle buttons to grow to be easily clickable with a mouse */
+  .mode-btn {
+    padding: 14px;
+    cursor: pointer; /* Makes the pointer flip to a standard desktop click hand */
+  }
+
+  /* Secures your main navigation footer nicely to the bottom of the desktop frame */
+  .bottom-nav {
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+  }
+}

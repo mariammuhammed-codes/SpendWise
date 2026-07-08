@@ -1,0 +1,205 @@
+/* ===== SpendWise shared design tokens ===== */
+:root {
+  --green: #22C55E;
+  --green-dark: #16A34A;
+  --blue: #3B82F6;
+  --orange: #F59E0B;
+  --grey: #64748B;
+  --bg: #F1F5F9;
+  --white: #FFFFFF;
+  --text: #0F172A;
+  --muted: #64748B;
+  --radius: 20px;
+  --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --shadow-sm: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Poppins', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0;
+}
+
+.app {
+  width: 100%;
+  max-width: 100%;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 100vh;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* ===== Header ===== */
+.app-header {
+  background: linear-gradient(135deg, var(--green), var(--green-dark));
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 18px;
+}
+.app-title { font-size: 1.15rem; font-weight: 600; }
+.icon-btn {
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--white);
+  border: none;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  cursor: pointer; position: relative;
+  transition: background 0.2s ease;
+}
+.icon-btn:hover { background: rgba(255, 255, 255, 0.3); }
+.badge {
+  position: absolute; top: 8px; right: 9px;
+  width: 8px; height: 8px;
+  background: var(--orange);
+  border-radius: 50%;
+  border: 2px solid var(--green-dark);
+}
+
+/* ===== Content ===== */
+.content { flex: 1; padding: 20px 18px 90px; }
+.intro { color: var(--muted); font-size: 0.9rem; margin-bottom: 16px; }
+
+.reminder-list { display: flex; flex-direction: column; gap: 14px; }
+
+.reminder-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--white);
+  border: 1px solid #eef2f6;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 16px;
+  animation: fadeUp 0.35s ease both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reminder-icon {
+  width: 46px; height: 46px;
+  border-radius: 14px;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+  color: var(--white);
+}
+.reminder-meta { flex: 1; min-width: 0; }
+.reminder-title { font-weight: 600; font-size: 0.98rem; }
+.reminder-desc { font-size: 0.8rem; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+
+/* Toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px; height: 28px;
+  flex-shrink: 0;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: #cbd5e1;
+  border-radius: 999px;
+  transition: background 0.3s ease;
+}
+.slider::before {
+  content: "";
+  position: absolute;
+  height: 22px; width: 22px;
+  left: 3px; top: 3px;
+  background: var(--white);
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.switch input:checked + .slider { background: var(--green); }
+.switch input:checked + .slider::before { transform: translateX(22px); }
+.switch input:focus-visible + .slider { outline: 2px solid var(--green-dark); outline-offset: 2px; }
+
+/* ===== Bottom nav ===== */
+.bottom-nav {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: var(--white);
+  border-top: 1px solid #eef2f6;
+  display: flex; justify-content: space-around;
+  padding: 10px 6px;
+}
+.nav-item {
+  text-decoration: none; color: var(--grey);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-size: 0.72rem; font-weight: 500;
+  padding: 6px 10px; border-radius: 14px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+.nav-item.active { color: var(--green); background: rgba(34, 197, 94, 0.1); }
+.nav-item:hover { color: var(--green-dark); }
+
+/* ===== Responsive ===== */
+/* ==========================================================================
+   UPDATED RESPONSIVE BREAKPOINTS (TABLET & DESKTOP FRAMEWORK)
+   ========================================================================== */
+
+/* 1. Mobile Optimization Tweaks (For very small screens) */
+@media (max-width: 380px) {
+  .content { padding: 16px 14px 90px; }
+  .reminder-card { padding: 14px; gap: 10px; }
+  .reminder-icon { width: 40px; height: 40px; }
+}
+
+/* 2. Tablet Layout (Screens 600px wide up to 1024px) */
+@media (min-width: 600px) {
+  body {
+    padding: 24px; /* Centers the canvas inside the viewport with outer breathing space */
+    align-items: center;
+  }
+  
+  .app {
+    max-width: 650px; /* Expands width to cleanly showcase your app data */
+    min-height: 80vh; /* Converts standard viewport into an independent app frame */
+    max-height: 90vh;
+    border-radius: var(--radius); /* Re-applies rounded corners */
+    box-shadow: var(--shadow); /* Adds the gorgeous elevation background depth back */
+    overflow: hidden;
+  }
+
+  /* Split your reminders list into an elegant 2-column layout on tablets */
+  .reminder-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+/* 3. Desktop, TV, & Large Monitor Layout (Screens 1025px and up) */
+@media (min-width: 1025px) {
+  .app {
+    max-width: 900px; /* Spreads out beautifully to match desktop layout standards */
+    max-height: 800px;
+  }
+
+  /* Expands layout further into 3 parallel dashboard rows */
+  .reminder-list {
+    grid-template-columns: repeat(3, 1fr); 
+  }
+  
+  /* Positions the bottom navigation sticky to the container bounds cleanly */
+  .bottom-nav {
+    border-bottom-left-radius: var(--radius);
+    border-bottom-right-radius: var(--radius);
+  }
+}
